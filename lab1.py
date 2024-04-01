@@ -2,46 +2,39 @@
 # Add book
 def add(database, bookInfo):
     with open(database, 'a') as file:
-        file.write('|'.join(bookInfo) + "\n")
+        file.write(str(bookInfo) + '\n')
     print("Book added successfully.")
 
 # Remove Book
-def rm(database, bookName):
+def rm(database, name):
     with open(database, 'r') as file:
         lines = file.readlines()
-    with open(database, 'w') as file:
+    with open(database, 'a') as file:
         for line in lines:
-            if bookName not in line:
-                file.write(line)
+            if name in line:
+                del line
+                file.write(lines)
     print("Book removed successfully.")
 
 # Modify book
 def modify(database, oldInfo=None, newInfo=None):
-    if not any(oldInfo):
-        print("Please enter at least one old book feature.")
-        return
-    
     with open(database, 'r') as file:
         lines = file.readlines()
 
-    modified = False
-    with open(database, 'w') as file:
-        for line in lines:
-            bookInfo = line.strip().split("|")
-            matching = True
-            for old, new in zip(oldInfo, newInfo):
-                if old and old != bookInfo[0] and old != bookInfo[1] and old != bookInfo[2] and old != bookInfo[3]:
-                    matching = False
-                    break
-                elif old and old == bookInfo[0]:
-                    modified = True
-                    line = "|".join(newInfo) + "\n"
-                    break
-            if matching and modified:
-                file.write(line)
-                print("Book modified successfully.")
-            else:
-                file.write(line)
+    for i, line in enumerate(lines):
+        features = [element.strip("' ") for element in line.strip().strip("[]").split(",")]
+        if any(oldElement in features for oldElement in oldInfo):
+            modifiedIndices = [idx for idx, element in enumerate(features) if element in oldInfo]
+            for idx in modifiedIndices:
+                features[idx] = newInfo[idx]
+            lines[i] = str(features) + '\n'
+            with open(database, 'w') as file:
+                file.writelines(lines)
+            print('Book modified successfully.')
+            break # Exit the loop after modifying the first occurrence
+    else:
+        print("Book not found.")   
+
 
 # Search book
 def search(database, query):
@@ -53,6 +46,10 @@ def search(database, query):
                 found = True
     if not found:
         print("No matching books found.")
+
+# View books
+#def view():
+
 
 # Basis of the code
 def main():
@@ -80,14 +77,17 @@ def main():
             oldYear = input('Enter old published year (leave blank to skip): ')
             oldGenre = input('Enter old genre (leave blank to skip): ')
             oldInfo = [oldName, oldAuthor, oldYear, oldGenre]
+            if not any(oldInfo):
+                print("Please enter at least one old book feature.")
+                break
+            else:
+                newName = input('Enter new book name: ')
+                newAuthor = input('Enter new author name: ')
+                newYear = input('Enter new published year: ')
+                newGenre = input('Enter new genre: ')
+                newInfo = [newName, newAuthor, newYear, newGenre]
 
-            newName = input('Enter new book name: ')
-            newAuthor = input('Enter new author name: ')
-            newYear = input('Enter new published year: ')
-            newGenre = input('Enter new genre: ')
-            newInfo = [newName, newAuthor, newYear, newGenre]
-
-            modify(database, oldInfo, newInfo)
+                modify(database, oldInfo, newInfo)
         else:
             print('Invalid mode. Please try again.')
 
