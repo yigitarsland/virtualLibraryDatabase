@@ -38,18 +38,23 @@ def modify(database, oldInfo=None, newInfo=None):
 
 # Search book
 def search(database, query):
-    found = False
     with open(database, 'r') as file:
-        for line in file:
-            if query in line:
-                print(line.strip())
-                found = True
-    if not found:
-        print("No matching books found.")
+        lines = file.readlines()
 
-# View books
-#def view():
+    matched = []
 
+    for line in lines:
+        features = [element.strip("' ") for element in line.strip().strip("[]").split(",")]
+        if any(qElement in features for qElement in query):
+            matched.append(', '.join(features).strip("[]".rstrip('\n')))
+
+    print("Matched books:")
+    for book in matched:
+        print(book)
+
+# List books
+#def list():
+ 
 
 # Basis of the code
 def main():
