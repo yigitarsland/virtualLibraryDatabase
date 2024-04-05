@@ -1,1 +1,1 @@
-A virtual library database simulator. Has functions such as adding, modifying, removing and searching for books with their attributes. Stores every data indefinitely.
+A virtual library database. Has functions such as adding, modifying, removing, searching and listing books with their attributes. Stores every data locally.
