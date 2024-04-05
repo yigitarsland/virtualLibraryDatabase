@@ -9,14 +9,18 @@ def add(database, bookInfo):
 def rm(database, name):
     with open(database, 'r') as file:
         lines = file.readlines()
-    with open(database, 'a') as file:
+    found = False
+    with open(database, 'w') as file:
         for line in lines:
             if name in line:
-                del line
-                file.write(lines)
-                print("Book removed successfully.")      
+                found = True
             else:
-                print("Book not found.")
+                file.write(line)
+    if found:
+        print("Book removed successfully.")
+    else:
+        print("Book not found.")
+
 
 # Modify book
 def modify(database, oldInfo=None, newInfo=None):
